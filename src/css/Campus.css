@@ -1,0 +1,539 @@
+/* --- White Theme Variables --- */
+:root {
+  --bg-main: #f8f9fa;       
+  --bg-card: #ffffff;       
+  --bg-input: #ffffff;      
+  --border-color: #e5e7eb;  
+  --text-primary: #111827;  
+  --text-secondary: #6b7280;
+  --accent-blue: #006fee;   
+  --accent-green: #16a34a;  
+  --accent-red: #dc2626;    
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  
+  /* Layout Constants */
+  --sidebar-width: 260px;
+  --header-height: 70px;
+}
+
+/* --- Global Reset --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  overflow: hidden; /* Prevents double scrollbars */
+  background-color: var(--bg-main);
+}
+
+/* --- Fixed Layout Structure --- */
+.campus-layout {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-main);
+}
+
+/* SIDEBAR: Lock width so it never squeezes or wraps menu items */
+.sidebar { 
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  max-width: var(--sidebar-width);
+  height: 100vh;
+  background: #111111; 
+  flex-shrink: 0;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+/* MAIN CONTENT: The wrapper for Header + Dashboard */
+/* --- FIXED MAIN CONTENT WRAPPER --- */
+.main-content {
+  flex: 1;
+  min-width: 0;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+
+  /* IMPORTANT */
+  padding: 0;
+  padding-top: 70px;
+}
+.campus-layout .header {
+  position: fixed;
+  top: 0;
+  left: 262px;
+  width: calc(100% - 240px);
+  right: 0;
+  z-index: 990;
+}
+
+/* Mobile */
+@media (max-width: 1024px) {
+  .campus-layout .header {
+    left: 0;
+    width: 100%;
+  }
+}
+
+/* TOP NAVBAR/HEADER: Fixed at the top */
+.dashboard-navbar {
+  height: var(--header-height);
+  min-height: var(--header-height);
+  width: 100%;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  z-index: 10;
+}
+
+/* PAGE SCROLL AREA: Only this part scrolls */
+.page-container {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto; 
+  width: 100%;
+  
+  /* Clean scrollbar suppression across browsers */
+  scrollbar-width: none; 
+  -ms-overflow-style: none;  
+}
+
+.page-container::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* --- Dashboard Elements --- */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.header-text h1 { 
+  text-align: justify;
+  font-size: 1.75rem; 
+  font-weight: 700; 
+  color: var(--text-primary); 
+}
+
+.header-text p { 
+  color: var(--text-secondary); 
+  text-align: left;
+  font-size: 0.9rem; 
+}
+
+/* Statistics Grid - Responsive Fallback */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-number { 
+  font-size: 18px; 
+  font-weight: 800; 
+  color: var(--text-primary); 
+}
+
+/* --- Filters Bar --- */
+.filters-row {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 1rem;
+  border-radius: 12px;
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap; /* Allows inner controls to drop line when out of room */
+  align-items: center;
+}
+
+.filter-select {
+  background-color: #9ac0ec;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  padding-right: 10px;
+  border-radius: 8px;
+  outline: none;
+  font-weight: 500;
+  cursor: pointer;
+  min-width: 130px;
+  flex: 1;
+}
+
+.search-box { 
+  flex: 3; 
+  position: relative; 
+  min-width: 200px;
+}
+
+.search-box input {
+  width: 100%;
+  background: #f9fafb;
+  color: #111111;
+  border: 1px solid var(--border-color);
+  padding: 12px 12px 12px 40px;
+  border-radius: 8px;
+  outline: none;
+}
+
+/* --- Table Styling --- */
+.table-wrapper {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow-x: auto; /* Handles very wide tables on small screens */
+  box-shadow: var(--shadow-sm);
+  
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.table-wrapper::-webkit-scrollbar {
+  display: none !important;
+}
+
+.data-table { 
+  width: 100%; 
+  border-collapse: collapse; 
+  text-align: left; 
+}
+
+.data-table th { 
+  background-color: #f9fafb;
+  padding: 1rem; 
+  font-size: 12px; 
+  color: var(--text-secondary); 
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.data-table td { 
+  padding: 1.25rem 1rem; 
+  font-size: 15px;
+  border-bottom: 1px solid var(--border-color); 
+  color: var(--text-primary);
+  white-space: nowrap; /* Ensures structured alignment layout values hold */
+}
+
+/* --- Modal Styles --- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+  padding: 1rem;
+}
+
+.modal-box {
+  background: var(--bg-card);
+  width: 100%;
+  max-width: 800px;
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+}
+
+.modal-title {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title h2 { 
+  color: grey; 
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.modal-form { padding: 2rem; }
+
+.form-row { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 1.5rem; 
+  margin-bottom: 1.5rem; 
+}
+
+.form-group label { 
+  font-weight: 600;
+  text-align: left;
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  color:#111111;
+  background: #f9fafb;
+  outline: none;
+}
+
+textarea {
+  width: 100%;
+  padding: 13px;
+  background: #f1f1f1a1;
+  border: 2px solid #f1f1f1;
+  color: #111111;
+  border-radius: 5px;
+  outline: none;
+  resize: vertical;
+}
+
+.btn-add {
+  background: var(--accent-blue);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-export {
+  background: grey;
+  color: white;
+  border: none;
+  margin-right: 5px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   BREAKPOINTS ENGINE (Media Queries)
+   ========================================================================== */
+
+/* Tablet Optimization */
+@media (max-width: 1024px) {
+  .stats-container {
+    grid-template-columns: repeat(2, 1fr); /* Collapses into 2x2 layout grid */
+    gap: 1.25rem;
+  }
+  
+  .page-container {
+    padding: 1.5rem;
+  }
+}
+
+/* Small Tablets / Dynamic Mini Sidebar Toggle */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 70px; /* Optional fallback layout: shrinks sidebar to tiny width if your code handles icon-only views */
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .dashboard-header .btn-add {
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+  }
+
+  .filters-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr; /* Transforms form inputs into safe single-column stack */
+    gap: 1rem;
+  }
+  
+  .modal-form {
+    padding: 1.25rem;
+  }
+  
+  .modal-title {
+    padding: 1rem 1.25rem;
+  }
+}
+
+/* Mobile Screens */
+@media (max-width: 480px) {
+  .stats-container {
+    grid-template-columns: 1fr; /* Complete single-column vertical card flow */
+    gap: 1rem;
+  }
+  
+  .dashboard-navbar {
+    padding: 0 1rem;
+  }
+  
+  .page-container {
+    padding: 1rem;
+  }
+  
+  .header-text h1 {
+    font-size: 1.4rem;
+  }
+}
+/* Base Desktop Styling */
+.table-section {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.table-wrapper {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+.mobile-accordion-container {
+  display: none;
+}
+.accordion-header {
+  padding: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fbfbfc;
+  
+  /* Gives the mobile card a prominent light blue indicator strip on the right side */
+  border-right: 4px solid #348cff; 
+}
+/* ================= Responsive Trigger (< 850px) ================= */
+@media (max-width: 849px) {
+  .table-wrapper {
+    display: none !important;
+  }
+
+  .mobile-accordion-container {
+    display: flex !important;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .accordion-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+  }
+
+  .accordion-header {
+    padding: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fbfbfc;
+  }
+
+  .mobile-row-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .mobile-summary-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .mobile-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 13px;
+    min-width: 100px;
+    flex-shrink: 0;
+  }
+
+  .mobile-value {
+    color: var(--text-primary);
+    font-size: 14px;
+  }
+
+  /* Expandable Slide Slat Layout Engine */
+  .accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
+    background: var(--bg-card);
+  }
+
+  .accordion-content.expanded {
+    max-height: 800px; /* Safe limits ceiling boundary */
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .mobile-detail-row {
+    padding: 0.85rem 1.25rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .detail-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 13px;
+    min-width: 130px;
+    flex-shrink: 0;
+  }
+
+  .detail-value {
+    color: var(--text-primary);
+    font-size: 14px;
+    flex: 1;
+    line-height: 1.4;
+  }
+}
