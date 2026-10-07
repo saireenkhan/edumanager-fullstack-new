@@ -10,7 +10,7 @@ import ModalWrapper from '../components/ModalWrapper';
 import AddClassForm from '../components/AddClassForm';
 import { resultsFormSchema } from '../Data/Data';
 
-const API_BASE = 'http://localhost:5000/api/resultgeneration';
+const API_BASE = '/api/resultgeneration';
 
 export default function ResultGeneration() {
   const [showModal, setShowModal] = useState(false);

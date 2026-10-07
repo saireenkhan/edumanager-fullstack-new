@@ -4,7 +4,7 @@ import '../css/login.css';
 import img1 from '../assets/image.png';
 import eduLogo from '../assets/edu-logo.png';
 
- const API_URL = 'http://localhost:5000/api/auth/login';
+ const API_URL = '/api/auth/login';
 
 const Login = () => {
   const [isOpen, setIsOpen] = useState(false);

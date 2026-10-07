@@ -10,7 +10,7 @@ import ModalWrapper from '../components/ModalWrapper';
 import AddClassForm from '../components/AddClassForm';
 import { marksEntryFormSchema } from '../Data/Data';
 
-const API_BASE = 'http://localhost:5000/api/marks';
+const API_BASE = '/api/marks';
 
 export default function MarksEntry() {
   const [showModal, setShowModal] = useState(false);

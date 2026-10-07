@@ -10,7 +10,7 @@ import ModalWrapper from '../components/ModalWrapper';
 import AddClassForm from '../components/AddClassForm';
 import { homeworkFormSchema } from '../Data/Data';
 
-const API_BASE = 'http://localhost:5000/api/homework';
+const API_BASE = '/api/homework';
 
 export default function Homework() {
   const [showModal, setShowModal] = useState(false);

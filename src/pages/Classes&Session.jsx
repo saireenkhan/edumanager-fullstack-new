@@ -10,7 +10,7 @@ import ModalWrapper from '../components/ModalWrapper';
 import AddClassForm from '../components/AddClassForm';
 import { classesFormSchema } from '../Data/Data';
 
-const API_BASE = 'http://localhost:5000/api/classsection';
+const API_BASE = '/api/classsection';
 
 const ClassesSection = () => {
   const [showModal, setShowModal] = useState(false);

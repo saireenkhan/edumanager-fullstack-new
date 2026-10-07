@@ -10,7 +10,7 @@ import ModalWrapper from '../components/ModalWrapper';
 import AddClassForm from '../components/AddClassForm';
 import { lessonPlanFormSchema } from '../Data/Data';
 
-const API_BASE = 'http://localhost:5000/api/lessonplanning';
+const API_BASE = '/api/lessonplanning';
 
 export default function LessonPlanning() {
   const [showModal, setShowModal] = useState(false);

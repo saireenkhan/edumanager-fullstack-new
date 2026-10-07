@@ -36,7 +36,7 @@ const Salary = () => {
   const [searchText, setSearchText] = useState('');
   const [searchedValue, setSearchedValue] = useState('');
 
-  const API_URL = 'http://localhost:5000/api/salary';
+  const API_URL = '/api/salary';
 
   // Fetch Salary Data
   const fetchSalaryData = async () => {

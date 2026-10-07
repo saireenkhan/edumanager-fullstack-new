@@ -10,7 +10,7 @@ import ModalWrapper from '../components/ModalWrapper';
 import AddClassForm from '../components/AddClassForm';
 import { examinationFormSchema } from '../Data/Data';
 
-const API_BASE = 'http://localhost:5000/api/examination';
+const API_BASE = '/api/examination';
 
 const Examination = () => {
   const [showModal, setShowModal] = useState(false);

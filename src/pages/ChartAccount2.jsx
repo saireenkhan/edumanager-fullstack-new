@@ -29,7 +29,7 @@ const ChartAccount2 = () => {
   const [searchText, setSearchText] = useState('');
   const [searchedValue, setSearchedValue] = useState('');
 
-  const API_URL = 'http://localhost:5000/api/chart-accounts-2';
+  const API_URL = '/api/chart-accounts-2';
 
   const fetchChartAccounts = async () => {
     try {

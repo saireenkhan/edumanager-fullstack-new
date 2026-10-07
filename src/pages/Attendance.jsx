@@ -10,7 +10,7 @@ import ModalWrapper from '../components/ModalWrapper';
 import AddClassForm from '../components/AddClassForm';
 import { attendanceFormSchema } from '../Data/Data';
 
-const API_BASE = 'http://localhost:5000/api/attendance';
+const API_BASE = '/api/attendance';
 
 export default function Attendance() {
   const [showModal, setShowModal] = useState(false);

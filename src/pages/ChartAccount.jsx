@@ -10,7 +10,7 @@ import ModalWrapper from '../components/ModalWrapper';
 import AddClassForm from '../components/AddClassForm';
 import { accountFormSchema } from '../Data/Data';
 
-const API_BASE = 'http://localhost:5000/api/chartaccount';
+const API_BASE = '/api/chartaccount';
 
 const ChartAccount = () => {
   const [showModal, setShowModal] = useState(false);

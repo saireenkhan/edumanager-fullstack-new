@@ -10,7 +10,7 @@ import ModalWrapper from '../components/ModalWrapper';
 import AddClassForm from '../components/AddClassForm';
 import { topicCoverageFormSchema } from '../Data/Data';
 
-const API_BASE = 'http://localhost:5000/api/topiccoverage';
+const API_BASE = '/api/topiccoverage';
 
 export default function TopicCoverage() {
   const [showModal, setShowModal] = useState(false);

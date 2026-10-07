@@ -10,7 +10,7 @@ import ModalWrapper from '../components/ModalWrapper';
 import AddClassForm from '../components/AddClassForm';
 import { feeTypeFormSchema } from '../Data/Data';
 
-const API_BASE = 'http://localhost:5000/api/feetype';
+const API_BASE = '/api/feetype';
 const FeeType = () => {
   const [showModal, setShowModal] = useState(false);
   const [feeTypes, setFeeTypes] = useState([]);

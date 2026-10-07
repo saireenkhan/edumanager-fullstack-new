@@ -10,7 +10,7 @@ import ModalWrapper from '../components/ModalWrapper';
 import AddClassForm from '../components/AddClassForm';
 import { salaryFormSchema } from '../Data/Data';
 
-const API_BASE = 'http://localhost:5000/api/salary2';
+const API_BASE = '/api/salary2';
 
 const Salary2 = () => {
   const [showModal, setShowModal] = useState(false);

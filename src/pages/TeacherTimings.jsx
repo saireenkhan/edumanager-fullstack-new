@@ -33,7 +33,7 @@ const TeacherTimings = () => {
   const [searchText, setSearchText] = useState('');
   const [searchedValue, setSearchedValue] = useState('');
 
-  const API_URL = 'http://localhost:5000/api/teacher-timings';
+  const API_URL = '/api/teacher-timings';
 
   const fetchTeacherTimings = async () => {
     try {

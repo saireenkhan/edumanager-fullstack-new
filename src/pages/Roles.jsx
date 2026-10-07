@@ -21,7 +21,7 @@ import {
   teacherFormSchema
 } from '../Data/Data';
 
-const API_BASE = 'http://localhost:5000/api/roles';
+const API_BASE = '/api/roles';
 
 const Roles = () => {
   const [showAdminModal, setShowAdminModal] = useState(false);

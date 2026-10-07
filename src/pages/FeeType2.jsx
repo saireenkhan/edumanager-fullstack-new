@@ -33,7 +33,7 @@ const FeeType2 = () => {
   const [searchText, setSearchText] = useState('');
   const [searchedValue, setSearchedValue] = useState('');
 
-  const API_URL = 'http://localhost:5000/api/fee-types-2';
+  const API_URL = '/api/fee-types-2';
 
   const fetchFeeTypes = async () => {
     try {

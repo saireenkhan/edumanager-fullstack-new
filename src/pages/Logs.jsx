@@ -23,7 +23,7 @@ import StatCard from '../components/StatCard';
 import DataTable from '../components/DataTable';
 
 const API_URL =
-  'http://localhost:5000/api/login-logs';
+  '/api/login-logs';
 
 const Logs = () => {
   const [isRefreshing, setIsRefreshing] =
