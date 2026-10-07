@@ -30,7 +30,7 @@ const homeworkRoutes = require('./modules/homework/homework.routes.js');
 const attendanceRoutes = require('./modules/attendance/attendence.routes.js');
 const marksRoutes = require('./modules/marks/mark.routes.js');
 const rolesRoutes = require('./modules/roles/roles.routes.js');
-const resultGenerationRoutes = require('./modules/resultgeneration/resultgeneration.routes.js');
+const resultGenerationRoutes = require('./modules/ResultGeneration/resultgeneration.routes.js');
 const loginLogsRoutes = require(
   './modules/loginlogs/loginlogs.routes.js'
 );
