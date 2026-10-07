@@ -13,7 +13,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import "../css/SideBar.css";
+import "../css/Sidebar.css";
 
 export default function Sidebar3() {
   const location = useLocation();

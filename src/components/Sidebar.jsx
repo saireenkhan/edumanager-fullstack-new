@@ -10,7 +10,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import "../css/SideBar.css";
+import "../css/Sidebar.css";
 
 export default function Sidebar() {
   const location = useLocation();
