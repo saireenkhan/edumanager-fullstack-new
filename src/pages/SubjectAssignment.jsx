@@ -1,86 +1,174 @@
-import React, { useState } from 'react';
-import '../css/Campus.css'; // Uses your core framework layout and media breakpoint rules
+import React, { useState, useEffect } from 'react';
+import '../css/Campus.css';
 import { BookOpen, UserCheck, GraduationCap, Clock, Search } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
-
-// Shared Global UI Primitives
 import PageHeader from '../components/PageHeader';
 import StatCard from '../components/StatCard';
 import DataTable from '../components/DataTable';
 import ModalWrapper from '../components/ModalWrapper';
 import AddClassForm from '../components/AddClassForm';
+import { subjectFormSchema } from '../Data/Data';
 
-// UNIQUE CONFIGURATION ASSETS - Imported cleanly from your unified data file
-import { subjectAssignmentsData, subjectFormSchema } from '../Data/Data';
+const API_BASE = 'http://localhost:5000/api/subjectassignment';
 
 export default function SubjectAssignment() {
   const [showModal, setShowModal] = useState(false);
+  const [assignments, setAssignments] = useState([]);
+  const [totals, setTotals] = useState({ total: 0 });
+
+  // Search states
+  const [searchText, setSearchText] = useState('');
+  const [searchedValue, setSearchedValue] = useState('');
+
+  useEffect(() => {
+    fetchAssignments();
+    fetchTotals();
+  }, []);
+
+  async function fetchAssignments() {
+    try {
+      const res = await fetch(API_BASE);
+      const json = await res.json();
+      if (json.success) setAssignments(json.data);
+    } catch (err) {
+      console.error('Could not load assignments', err);
+    }
+  }
+
+  async function fetchTotals() {
+    try {
+      const res = await fetch(`${API_BASE}/totals`);
+      const json = await res.json();
+      if (json.success) setTotals(json.data);
+    } catch (err) {
+      console.error('Could not load totals', err);
+    }
+  }
+
+  async function handleAddAssignment(formValues) {
+    try {
+      const res = await fetch(API_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formValues),
+      });
+      const json = await res.json();
+
+      if (json.success) {
+        alert('Subject assignment added successfully!');
+        setShowModal(false);
+        fetchAssignments();
+        fetchTotals();
+      } else {
+        alert(json.message || 'Failed to save assignment');
+      }
+    } catch (err) {
+      alert('Network error — is the backend running?');
+    }
+  }
+
+  const handleSearch = () => {
+    setSearchedValue(searchText.trim());
+  };
+
+  const handleSearchInputChange = (e) => {
+    const value = e.target.value;
+    setSearchText(value);
+
+    // Jab search input clear ho, original fetched data wapas show hoga
+    if (value.trim() === '') {
+      setSearchedValue('');
+    }
+  };
+
+  const displayedAssignments =
+    searchedValue === ''
+      ? assignments
+      : assignments.filter((item) => {
+          const subjectName = item.subjectName || '';
+          const classCode = item.classCode || '';
+          const classSection = item.classSection || '';
+          const assignedTeacher = item.assignedTeacher || '';
+          const weeklyHours = item.weeklyHours ? String(item.weeklyHours) : '';
+
+          return (
+            subjectName.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            classCode.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            classSection.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            assignedTeacher.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            weeklyHours.toLowerCase().includes(searchedValue.toLowerCase())
+          );
+        });
 
   return (
     <div className="campus-layout">
-      {/* 1. SIDEBAR NAVIGATION */}
       <Sidebar />
 
       <div className="main-content">
-        {/* 2. TOP BANNER NAVBAR */}
         <Header />
 
         <div className="page-container">
-          {/* 3. PAGE HEADER & ACTIONS */}
-          <PageHeader 
+          <PageHeader
             title="Subject Assignment"
             subtitle="Allocate academic subjects, credit allocations, and assign instructors to specific classrooms"
             btnText="Assign New Subject"
             onBtnClick={() => setShowModal(true)}
           />
 
-          {/* 4. STATISTICS DASHBOARD GRID */}
           <section className="stats-container">
-            <StatCard icon={BookOpen} title="Total Subjects" value="18" dotColor="#555" />
-            <StatCard icon={UserCheck} title="Assigned Allocations" value="15" dotColor="var(--accent-green)" iconColor="var(--accent-green)" />
+            <StatCard icon={BookOpen} title="Total Subjects" value={totals.total} dotColor="#555" />
+            <StatCard icon={UserCheck} title="Assigned Allocations" value={totals.total} dotColor="var(--accent-green)" iconColor="var(--accent-green)" />
             <StatCard icon={GraduationCap} title="Vacant Allocations" value="03" dotColor="var(--accent-red)" iconColor="var(--accent-red)" />
             <StatCard icon={Clock} title="Total Weekly Hours" value="72h" dotColor="var(--accent-blue)" iconColor="var(--accent-blue)" />
           </section>
 
-          {/* 5. SEARCH & SELECT FILTERS ROW */}
           <div className="filters-row">
             <div className="search-box">
               <Search size={18} style={{ position: 'absolute', left: '14px', top: '12px', color: '#555' }} />
-              <input type="text" placeholder="Search by subject name or code..." />
+              <input
+                type="text"
+                placeholder="Search by subject name or code..."
+                value={searchText}
+                onChange={handleSearchInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch();
+                  }
+                }}
+              />
             </div>
-            <select className="filter-select"><option>All Classes</option></select>
-            <select className="filter-select"><option>Filter by Teacher</option></select>
-            <select className="filter-select"><option>Allocation Status</option></select>
+            <button className="filter-select" onClick={handleSearch}>Search</button>
           </div>
 
-          {/* 6. RESPONSIVE CUSTOM DATA ENGINE TABLE */}
-          <DataTable headers={['Subject Details', 'Subject Code', 'Class / Section', 'Assigned Teacher', 'Weekly Allocation', 'Status']}>
-            {subjectAssignmentsData && subjectAssignmentsData.map((item) => (
-              <tr key={item.id}>
-                <td>
-                  <strong>{item.subjectName}</strong>
-                  <br />
-                  <small style={{ color: '#555' }}>{item.type || 'Core Curriculum'}</small>
-                </td>
-                <td>{item.classCode}</td>
-                <td>{item.classSection}</td>
-                <td>{item.assignedTeacher}</td>
-                <td>{item.weeklyHours}</td>
-                <td>
-                  <span className={`status-badge ${item.status.toLowerCase() === 'assigned' ? 'active' : 'suspended'}`}>
-                    {item.status}
-                  </span>
+          <DataTable headers={['Subject Details', 'Subject Code', 'Class / Section', 'Assigned Teacher', 'Weekly Allocation']}>
+            {displayedAssignments.length > 0 ? (
+              displayedAssignments.map((item) => (
+                <tr key={item._id}>
+                  <td>
+                    <strong>{item.subjectName}</strong>
+                    <br />
+                    <small style={{ color: '#555' }}>Core Curriculum</small>
+                  </td>
+                  <td>{item.classCode}</td>
+                  <td>{item.classSection}</td>
+                  <td>{item.assignedTeacher}</td>
+                  <td>{item.weeklyHours}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>
+                  Nothing found
                 </td>
               </tr>
-            ))}
+            )}
           </DataTable>
         </div>
       </div>
 
-      {/* 7. REUSABLE DRAWER MODAL OVERLAY */}
       <ModalWrapper isOpen={showModal} onClose={() => setShowModal(false)} title="Create New Subject Allocation">
-        <AddClassForm fields={subjectFormSchema} buttonText="Save Subject Assignment" />
+        <AddClassForm fields={subjectFormSchema} buttonText="Save Subject Assignment" onSubmit={handleAddAssignment} />
       </ModalWrapper>
     </div>
   );

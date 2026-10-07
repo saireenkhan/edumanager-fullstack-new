@@ -17,6 +17,10 @@ const Academic2 = () => {
   const [classes, setClasses] = useState([]);
   const [totals, setTotals] = useState({ totalClasses: 0, totalSections: 0, avgStrength: 0 });
 
+  // Search states
+  const [searchText, setSearchText] = useState('');
+  const [searchedValue, setSearchedValue] = useState('');
+
   useEffect(() => {
     fetchClasses();
     fetchTotals();
@@ -64,6 +68,37 @@ const Academic2 = () => {
     }
   }
 
+  const handleSearch = () => {
+    setSearchedValue(searchText.trim());
+  };
+
+  const handleSearchInputChange = (e) => {
+    const value = e.target.value;
+    setSearchText(value);
+
+    // Jab search input clear ho, original fetched data wapas show hoga
+    if (value.trim() === '') {
+      setSearchedValue('');
+    }
+  };
+
+  const displayedClasses =
+    searchedValue === ''
+      ? classes
+      : classes.filter((item) => {
+          const className = item.className || '';
+          const department = item.department || '';
+          const capacity = item.capacity ? String(item.capacity) : '';
+          const sections = Array.isArray(item.sections) ? item.sections.join(' ') : '';
+
+          return (
+            className.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            department.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            capacity.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            sections.toLowerCase().includes(searchedValue.toLowerCase())
+          );
+        });
+
   return (
     <div className="campus-layout">
       <Sidebar3 />
@@ -88,35 +123,53 @@ const Academic2 = () => {
           <div className="filters-row">
             <div className="search-box">
               <Search size={18} style={{ position: 'absolute', left: '14px', top: '12px', color: '#555' }} />
-              <input type="text" placeholder="Search by class name..." />
+              <input
+                type="text"
+                placeholder="Search by class name..."
+                value={searchText}
+                onChange={handleSearchInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch();
+                  }
+                }}
+              />
             </div>
-            <button className="filter-select">search</button>
+            <button className="filter-select" onClick={handleSearch}>search</button>
           </div>
 
           <DataTable headers={['Class / Grade', 'Sections', 'Department', 'Capacity']}>
-            {classes.map((item) => (
-              <tr key={item._id}>
-                <td><strong>{item.className}</strong></td>
-                <td>
-                  {item.sections.map((sec, idx) => (
-                    <span
-                      key={idx}
-                      style={{
-                        background: '#f3f4f6',
-                        padding: '2px 8px',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                        marginRight: '4px'
-                      }}
-                    >
-                      {sec}
-                    </span>
-                  ))}
+            {displayedClasses.length > 0 ? (
+              displayedClasses.map((item) => (
+                <tr key={item._id}>
+                  <td><strong>{item.className}</strong></td>
+                  <td>
+                    {item.sections.map((sec, idx) => (
+                      <span
+                        key={idx}
+                        style={{
+                          background: '#f3f4f6',
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          fontSize: '12px',
+                          marginRight: '4px'
+                        }}
+                      >
+                        {sec}
+                      </span>
+                    ))}
+                  </td>
+                  <td>{item.department}</td>
+                  <td>{item.capacity}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" style={{ textAlign: 'center', padding: '20px' }}>
+                  Nothing found
                 </td>
-                <td>{item.department}</td>
-                <td>{item.capacity}</td>
               </tr>
-            ))}
+            )}
           </DataTable>
         </div>
       </div>

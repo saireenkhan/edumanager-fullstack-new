@@ -29,6 +29,10 @@ const FeeType2 = () => {
     totalBaseAmount: 0,
   });
 
+  // Search states
+  const [searchText, setSearchText] = useState('');
+  const [searchedValue, setSearchedValue] = useState('');
+
   const API_URL = 'http://localhost:5000/api/fee-types-2';
 
   const fetchFeeTypes = async () => {
@@ -127,6 +131,47 @@ const FeeType2 = () => {
     }
   };
 
+  const handleSearch = () => {
+    setSearchedValue(searchText.trim());
+  };
+
+  const handleSearchInputChange = (e) => {
+    const value = e.target.value;
+    setSearchText(value);
+
+    // Jab search input clear ho, original fetched data wapas show hoga
+    if (value.trim() === '') {
+      setSearchedValue('');
+    }
+  };
+
+  const displayedFeeTypeData =
+    searchedValue === ''
+      ? feeTypeData
+      : feeTypeData.filter((row) => {
+          const name = row.name || '';
+          const feeName = row.feeName || '';
+          const lateFeeFineLogic = row.lateFeeFineLogic || '';
+          const frequency = row.frequency || '';
+          const code = row.code || '';
+          const shortCode = row.shortCode || '';
+          const mandatoryForAll = row.mandatoryForAll || '';
+          const amount = row.amount ? String(row.amount) : '';
+          const baseAmount = row.baseAmount ? String(row.baseAmount) : '';
+
+          return (
+            name.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            feeName.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            lateFeeFineLogic.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            frequency.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            code.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            shortCode.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            mandatoryForAll.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            amount.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            baseAmount.toLowerCase().includes(searchedValue.toLowerCase())
+          );
+        });
+
   const recurringFees = feeTypeData.filter(
     (item) => item.frequency !== 'One-Time'
   ).length;
@@ -196,15 +241,25 @@ const FeeType2 = () => {
           <div className="filters-row">
             <div className="search-box">
               <Search size={18} style={{ position: 'absolute', left: '14px', top: '12px', color: '#555' }} />
-              <input type="text" placeholder="Search fee head (e.g. Tuition)..." />
+              <input
+                type="text"
+                placeholder="Search fee head (e.g. Tuition)..."
+                value={searchText}
+                onChange={handleSearchInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch();
+                  }
+                }}
+              />
             </div>
-            <button className="filter-select">Search</button>
+            <button className="filter-select" onClick={handleSearch}>Search</button>
           </div>
 
           {/* FEE STRUCTURE TABLE */}
           <DataTable headers={['Fee Head / Name', 'Frequency', 'Account Code', 'Mandatory', 'Base Amount']}>
-            {feeTypeData.length > 0 ? (
-              feeTypeData.map((row) => (
+            {displayedFeeTypeData.length > 0 ? (
+              displayedFeeTypeData.map((row) => (
                 <tr key={row.id}>
                   <td>
                     <strong>{row.name || row.feeName}</strong><br />

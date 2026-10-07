@@ -458,36 +458,32 @@ export const rolesData = [
 // Configuration blueprint mapping out input segments within the role creation modal 
 export const rolesFormSchema = [
   {
-    name: "roleName",
-    label: "Role Name",
-    placeholder: "e.g. Exam Coordinator",
+    name: "UserID",
+    label: " Create Admin ID",
+    placeholder: "e.g. Admin_001",
     required: false
   },
   {
-    name: "modulePermissions",
-    label: "Assign Module Permissions",
-    type: "checkboxGroup",
-    marginTop: "1.5rem",
-    style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '10px' },
-    options: [
-      'Campus Management', 
-      'Student Admission', 
-      'Fee Management', 
-      'Staff Payroll', 
-      'Examination Control', 
-      'Inventory Access'
-    ]
+    name: "Password",
+    label: " Create Admin Password",
+    placeholder: "e.g. 098765Abc",
+    required: false
+  },
+];
+export const teacherFormSchema = [
+  {
+    name: "UserID",
+    label: " Create Teacher ID",
+    placeholder: "e.g. Admin_001",
+    required: false
   },
   {
-    name: "actionLimits",
-    label: "Action Limits",
-    type: "inlineCheckboxes",
-    marginTop: "1.5rem",
-    style: { display: 'flex', gap: '20px', marginTop: '5px' },
-    options: ['Read', 'Create', 'Update', 'Delete']
-  }
+    name: "Password",
+    label: " Create Teacher Password",
+    placeholder: "e.g. 098765Abc",
+    required: false
+  },
 ];
-
 // Data rows for the payroll components ledger table
 export const salaryData = [
   {
@@ -897,3 +893,73 @@ export const resultsFormSchema = [
   { name: 'gpa', label: 'Calculated CGPA', type: 'text', placeholder: 'e.g., 3.75' },
   { name: 'termName', label: 'Academic Term Framework', type: 'text', placeholder: 'e.g., Mid-Term Examination' }
 ];
+export const feePerStudentData = {
+  feePerStudent: 3500,
+  expectedTotal: 10500,
+  grossFee: 10500,
+  discount: 0,
+  fine: 0,
+  previousBalance: 0,
+  netExpected: 10500,
+  instructions: "Please pay the fee before the due date. Late fine will be charged after the due date.",
+  copies: "Student + School Copy",
+  status: "Generated"
+};
+// Schema definition for Fee Head Modal matching AddClassForm structure
+export const feeHeadFormSchema = [
+  {
+    name: 'feeHead',
+    label: 'Fee Head Name',
+    type: 'text',
+    placeholder: 'e.g. Tuition Fee, Library Charges',
+    required: true
+  },
+  {
+    name: 'amount',
+    label: 'Amount (Rs.)',
+    type: 'number',
+    placeholder: '0',
+    required: true
+  },
+  {
+    name: 'discount',
+    label: 'Discount (Rs.)',
+    type: 'number',
+    placeholder: '0',
+    required: false
+  },
+  {
+    name: 'remarks',
+    label: 'Remarks / Description',
+    type: 'textarea',
+    placeholder: 'Optional details...',
+    required: false
+  }
+];
+export const feeGenerationFormData = {
+  campus: "Main Campus",
+  academicSession: "2026-2027",
+  generateType: "Class Wise",
+  className: "Play Group",
+  section: "All Sections",
+  student: "All Students",
+  feeMonth: "January",
+  dueDate: "",
+  issueDate: "",
+  remarks: ""
+};
+
+export const feeHeadsData = [
+  { id: 1, feeHead: "Monthly Tuition Fee", amount: 3000, discount: 0, fine: 0, total: 3000, selected: true },
+  { id: 2, feeHead: "Transport Fee", amount: 1500, discount: 0, fine: 0, total: 1500, selected: true },
+  { id: 3, feeHead: "Computer Fee", amount: 500, discount: 0, fine: 0, total: 500, selected: true },
+  { id: 4, feeHead: "Exam Fee", amount: 1000, discount: 0, fine: 0, total: 1000, selected: true },
+  { id: 5, feeHead: "Library Fee", amount: 300, discount: 0, fine: 0, total: 300, selected: true }
+];
+
+export const feeSummaryData = {
+  totalFee: 6300,
+  totalDiscount: 0,
+  totalFine: 0,
+  netPayable: 6300
+};

@@ -130,6 +130,7 @@ const AddClassForm = ({ fields, buttonText, onSubmit }) => {
       >
         {buttonText}
       </button>
+      
     </form>
   );
 };

@@ -5,7 +5,9 @@ const PageHeader = ({
   title, 
   subtitle, 
   btnText, 
+    btnText2,
   onBtnClick, 
+  onBtnClick2,
   showExportBtn = false, 
   exportBtnText = "Export", 
   exportBtnStyle = {} 
@@ -22,7 +24,11 @@ const PageHeader = ({
             <Download size={18} /> {exportBtnText}
           </button>
         )}
-        
+                {btnText2 && (
+          <button type="button" className="btn-add" onClick={onBtnClick2}>
+            {btnText2}
+          </button>
+        )}
         {btnText && (
           <button type="button" className="btn-add" onClick={onBtnClick}>
             {btnText}

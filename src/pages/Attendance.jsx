@@ -1,89 +1,183 @@
-import React, { useState } from 'react';
-import '../css/Campus.css'; // Keeps layout alignment and responsive layout grids identical
+import React, { useState, useEffect } from 'react';
+import '../css/Campus.css';
 import { Users, CheckCircle, XCircle, AlertCircle, Search } from 'lucide-react';
-import Sidebar from '../components/Sidebar'; // Using your unified Sidebar component
+import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
-
-// Shared Global UI Primitives
 import PageHeader from '../components/PageHeader';
 import StatCard from '../components/StatCard';
 import DataTable from '../components/DataTable';
 import ModalWrapper from '../components/ModalWrapper';
 import AddClassForm from '../components/AddClassForm';
+import { attendanceFormSchema } from '../Data/Data';
 
-// UNIQUE CONFIGURATION ASSETS - Reading straight from your centralized store
-import { attendanceData, attendanceFormSchema } from '../Data/Data';
+const API_BASE = 'http://localhost:5000/api/attendance';
 
 export default function Attendance() {
   const [showModal, setShowModal] = useState(false);
+  const [records, setRecords] = useState([]);
+  const [totals, setTotals] = useState({ total: 0, present: 0, absent: 0, leave: 0 });
+
+  // Search states
+  const [searchText, setSearchText] = useState('');
+  const [searchedValue, setSearchedValue] = useState('');
+
+  useEffect(() => {
+    fetchAttendance();
+    fetchTotals();
+  }, []);
+
+  async function fetchAttendance() {
+    try {
+      const res = await fetch(API_BASE);
+      const json = await res.json();
+      if (json.success) setRecords(json.data);
+    } catch (err) {
+      console.error('Could not load attendance', err);
+    }
+  }
+
+  async function fetchTotals() {
+    try {
+      const res = await fetch(`${API_BASE}/totals`);
+      const json = await res.json();
+      if (json.success) setTotals(json.data);
+    } catch (err) {
+      console.error('Could not load totals', err);
+    }
+  }
+
+  async function handleAddAttendance(formValues) {
+    try {
+      const res = await fetch(API_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formValues),
+      });
+      const json = await res.json();
+
+      if (json.success) {
+        alert('Attendance marked successfully!');
+        setShowModal(false);
+        fetchAttendance();
+        fetchTotals();
+      } else {
+        alert(json.message || 'Failed to save attendance');
+      }
+    } catch (err) {
+      alert('Network error — is the backend running?');
+    }
+  }
+
+  const handleSearch = () => {
+    setSearchedValue(searchText.trim());
+  };
+
+  const handleSearchInputChange = (e) => {
+    const value = e.target.value;
+    setSearchText(value);
+
+    // Jab search input clear ho, original fetched data wapas show hoga
+    if (value.trim() === '') {
+      setSearchedValue('');
+    }
+  };
+
+  const displayedRecords =
+    searchedValue === ''
+      ? records
+      : records.filter((item) => {
+          const studentName = item.studentName || '';
+          const rollNo = item.rollNo || '';
+          const classSection = item.classSection || '';
+          const subjectName = item.subjectName || '';
+          const dateLogged = item.dateLogged || '';
+          const status = item.status || '';
+
+          return (
+            studentName.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            rollNo.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            classSection.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            subjectName.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            dateLogged.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            status.toLowerCase().includes(searchedValue.toLowerCase())
+          );
+        });
 
   return (
     <div className="campus-layout">
-      {/* 1. SIDEBAR NAVIGATION */}
       <Sidebar />
 
       <div className="main-content">
-        {/* 2. TOP BANNER NAVBAR */}
         <Header />
 
         <div className="page-container">
-          {/* 3. PAGE HEADER & ACTIONS */}
-          <PageHeader 
+          <PageHeader
             title="Attendance Tracking"
             subtitle="Record daily student presence, log institutional absences, and manage classroom roll calls"
             btnText="Mark Attendance"
             onBtnClick={() => setShowModal(true)}
           />
 
-          {/* 4. STATISTICS DASHBOARD GRID */}
           <section className="stats-container">
-            <StatCard icon={Users} title="Total Students" value="120" dotColor="#555" />
-            <StatCard icon={CheckCircle} title="Present Today" value="112" dotColor="var(--accent-green)" iconColor="var(--accent-green)" />
-            <StatCard icon={XCircle} title="Absence Logs" value="05" dotColor="var(--accent-red)" iconColor="var(--accent-red)" />
-            <StatCard icon={AlertCircle} title="Leave Applications" value="03" dotColor="var(--accent-blue)" iconColor="var(--accent-blue)" />
+            <StatCard icon={Users} title="Total Records" value={totals.total} dotColor="#555" />
+            <StatCard icon={CheckCircle} title="Present" value={totals.present} dotColor="var(--accent-green)" iconColor="var(--accent-green)" />
+            <StatCard icon={XCircle} title="Absent" value={totals.absent} dotColor="var(--accent-red)" iconColor="var(--accent-red)" />
+            <StatCard icon={AlertCircle} title="Leave" value={totals.leave} dotColor="var(--accent-blue)" iconColor="var(--accent-blue)" />
           </section>
 
-          {/* 5. SEARCH & SELECT FILTERS ROW */}
           <div className="filters-row">
             <div className="search-box">
               <Search size={18} style={{ position: 'absolute', left: '14px', top: '12px', color: '#555' }} />
-              <input type="text" placeholder="Search by student name or roll number..." />
+              <input
+                type="text"
+                placeholder="Search by student name or roll number..."
+                value={searchText}
+                onChange={handleSearchInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch();
+                  }
+                }}
+              />
             </div>
-            <select className="filter-select"><option>All Classes</option></select>
-            <select className="filter-select"><option>Select Section</option></select>
-            <select className="filter-select"><option>Attendance Status</option></select>
+            <button className="filter-select" onClick={handleSearch}>Search</button>
           </div>
 
-          {/* 6. RESPONSIVE CUSTOM DATA ENGINE TABLE */}
-          <DataTable headers={['Student Name / Roll', 'Class & Sec', 'Subject / Lecture', 'Date Logged', 'Remarks', 'Attendance Status']}>
-            {attendanceData && attendanceData.map((item) => (
-              <tr key={item.id}>
-                <td>
-                  <strong>{item.studentName}</strong>
-                  <br />
-                  <small style={{ color: '#555' }}>Roll No: {item.rollNo}</small>
-                </td>
-                <td>{item.classSection}</td>
-                <td>{item.subjectName || 'General Register'}</td>
-                <td>{item.dateLogged}</td>
-                <td>{item.remarks || 'No remarks recorded'}</td>
-                <td>
-                  <span className={`status-badge ${
-                    item.status.toLowerCase() === 'present' ? 'active' : 
-                    item.status.toLowerCase() === 'leave' ? 'suspended' : 'stale'
-                  }`}>
-                    {item.status}
-                  </span>
+          <DataTable headers={['Student Name / Roll', 'Class & Sec', 'Subject / Lecture', 'Date Logged', 'Attendance Status']}>
+            {displayedRecords.length > 0 ? (
+              displayedRecords.map((item) => (
+                <tr key={item._id}>
+                  <td>
+                    <strong>{item.studentName}</strong>
+                    <br />
+                    <small style={{ color: '#555' }}>Roll No: {item.rollNo}</small>
+                  </td>
+                  <td>{item.classSection}</td>
+                  <td>{item.subjectName}</td>
+                  <td>{item.dateLogged}</td>
+                  <td>
+                    <span className={`status-badge ${
+                      item.status.toLowerCase() === 'present' ? 'active' :
+                      item.status.toLowerCase() === 'leave' ? 'suspended' : 'stale'
+                    }`}>
+                      {item.status}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>
+                  Nothing found
                 </td>
               </tr>
-            ))}
+            )}
           </DataTable>
         </div>
       </div>
 
-      {/* 7. REUSABLE DRAWER MODAL OVERLAY */}
       <ModalWrapper isOpen={showModal} onClose={() => setShowModal(false)} title="Log Classroom Attendance Register">
-        <AddClassForm fields={attendanceFormSchema} buttonText="Save Attendance Register" />
+        <AddClassForm fields={attendanceFormSchema} buttonText="Save Attendance Register" onSubmit={handleAddAttendance} />
       </ModalWrapper>
     </div>
   );

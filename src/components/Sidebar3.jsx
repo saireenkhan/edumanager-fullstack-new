@@ -10,6 +10,8 @@ import {
   Receipt,
   Menu,
   X,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import "../css/SideBar.css";
 
@@ -17,6 +19,9 @@ export default function Sidebar3() {
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
+  // State to handle collapsible dropdown open/close states (keyed by label)
+  const [openDropdowns, setOpenDropdowns] = useState({});
 
   const navLinks = [
     { href: "/dashboard3", label: "Dashboard", icon: <Home size={18} /> },
@@ -24,6 +29,15 @@ export default function Sidebar3() {
     { href: "/ClassesSection2", label: "Classes & Session", icon: <Receipt size={18} /> },
     { href: "/SubjectManagement2", label: "Subject Management", icon: <DollarSign size={18} /> },
     { href: "/FeeType2", label: "Fee Type & Structure", icon: <Wallet size={18} /> },
+    { 
+      label: "Account", 
+      icon: <Wallet size={18} />, 
+      isDropdown: true,
+      children: [
+        { href: "/FeePerStudent", label: "Fee Per Student" },
+        { href: "/StudentFeeGeneration", label: "Student Fee Generation" }
+      ]
+    },
     { href: "/ChartAccount2", label: "Chart Of Account", icon: <User size={18} /> },
     { href: "/Examination2", label: "Examination Setup", icon: <User size={18} /> },
     { href: "/Departs2", label: "Department & Designation", icon: <Users size={18} /> },
@@ -60,6 +74,13 @@ export default function Sidebar3() {
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => { if (isMobile) setIsSidebarOpen(false); };
+
+  const toggleDropdown = (label) => {
+    setOpenDropdowns((prev) => ({
+      ...prev,
+      [label]: !prev[label]
+    }));
+  };
 
   return (
     <>
@@ -109,29 +130,74 @@ export default function Sidebar3() {
 
         {/* Navigation Menu Links */}
         <nav className="sidebar-nav">
-          {navLinks.map((link) => (
-            <div key={link.href} className="menu-item">
-              <Link
-                to={link.href}
-                className={`menu-link ${location.pathname === link.href ? 'active' : ''}`}
-                onClick={closeSidebar}
-              >
-                <span className="nav-icon">
-                  {link.icon}
-                </span>
-                
-                {isSidebarOpen && (
-                  <span className="nav-label">
-                    {link.label}
-                  </span>
+          {navLinks.map((link) => {
+            const isDropdownOpen = openDropdowns[link.label];
+
+            return (
+              <div key={link.label} className="menu-item">
+                {link.isDropdown ? (
+                  <>
+                    {/* Dropdown Toggle Header */}
+                    <div
+                      className="menu-link"
+                      onClick={() => toggleDropdown(link.label)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <span className="nav-icon">{link.icon}</span>
+                      {isSidebarOpen && <span className="nav-label">{link.label}</span>}
+                      {isSidebarOpen && (
+                        <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+                          {isDropdownOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Submenu Children Links */}
+                    {isDropdownOpen && isSidebarOpen && (
+                      <div className="submenu">
+                        {link.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            to={child.href}
+                            className={`menu-link ${location.pathname === child.href ? 'active' : ''}`}
+                            onClick={closeSidebar}
+                          >
+                            <span className="nav-label" style={{ paddingLeft: '12px' }}>
+                              {child.label}
+                            </span>
+                            {location.pathname === child.href && (
+                              <span className="active-indicator"></span>
+                            )}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  /* Standard Normal Link */
+                  <Link
+                    to={link.href}
+                    className={`menu-link ${location.pathname === link.href ? 'active' : ''}`}
+                    onClick={closeSidebar}
+                  >
+                    <span className="nav-icon">
+                      {link.icon}
+                    </span>
+                    
+                    {isSidebarOpen && (
+                      <span className="nav-label">
+                        {link.label}
+                      </span>
+                    )}
+                    
+                    {location.pathname === link.href && isSidebarOpen && (
+                      <span className="active-indicator"></span>
+                    )}
+                  </Link>
                 )}
-                
-                {location.pathname === link.href && isSidebarOpen && (
-                  <span className="active-indicator"></span>
-                )}
-              </Link>
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </nav>
       </aside>
     </>

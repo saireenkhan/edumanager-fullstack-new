@@ -23,6 +23,7 @@ import Homework from './pages/Homework';
 import Attendance from './pages/Attendance';
 import MarksEntry from './pages/MarksEntry';
 import ResultGeneration from './pages/ResultGeneration';
+import FeePerStudent from './pages/FeePerStudent';
 
 // Branch Admin Pages
 import Academic2 from './pages/Academic2';
@@ -35,6 +36,7 @@ import Departs2 from './pages/Departs2';
 import Salary2 from './pages/Salary2';
 import Roles2 from './pages/Roles2'; // FIXED: Added the missing import for Roles2
 import TeacherTimings2 from './pages/TeacherTimings2';
+import StudentFeeGeneration from './pages/StudentFeeGeneration';
 
 function App() {
   return (
@@ -67,7 +69,8 @@ function App() {
         <Route path='/Roles' element={<Roles/>} />          
         <Route path='/TeacherTimings' element={<TeacherTimings/>} />          
         <Route path='/Logs' element={<Logs/>} />   
-
+         <Route path='/FeePerStudent' element={<FeePerStudent/>} />   
+ <Route path='/StudentFeeGeneration' element={<StudentFeeGeneration/>} />   
         {/* Route for Admin panel */}
         <Route path="/dashboard3" element={<Dashboard3 />} />
         <Route path="/Academic2" element={<Academic2 />} />

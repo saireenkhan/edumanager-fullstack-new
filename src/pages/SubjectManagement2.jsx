@@ -17,6 +17,10 @@ const SubjectManagement2 = () => {
   const [subjects, setSubjects] = useState([]);
   const [totals, setTotals] = useState({ total: 0, theory: 0, practical: 0, both: 0 });
 
+  // Search states
+  const [searchText, setSearchText] = useState('');
+  const [searchedValue, setSearchedValue] = useState('');
+
   useEffect(() => {
     fetchSubjects();
     fetchTotals();
@@ -64,6 +68,43 @@ const SubjectManagement2 = () => {
     }
   }
 
+  const handleSearch = () => {
+    setSearchedValue(searchText.trim());
+  };
+
+  const handleSearchInputChange = (e) => {
+    const value = e.target.value;
+    setSearchText(value);
+
+    // Jab search input clear ho, original fetched data wapas show hoga
+    if (value.trim() === '') {
+      setSearchedValue('');
+    }
+  };
+
+  const displayedSubjects =
+    searchedValue === ''
+      ? subjects
+      : subjects.filter((row) => {
+          const subjectName = row.subjectName || '';
+          const subjectCode = row.subjectCode || '';
+          const assignedClass = row.assignedClass || '';
+          const subjectCategory = row.subjectCategory || '';
+          const subjectObjectives = row.subjectObjectives || '';
+          const totalMarks = row.totalMarks ? String(row.totalMarks) : '';
+          const passingPercentage = row.passingPercentage ? String(row.passingPercentage) : '';
+
+          return (
+            subjectName.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            subjectCode.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            assignedClass.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            subjectCategory.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            subjectObjectives.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            totalMarks.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            passingPercentage.toLowerCase().includes(searchedValue.toLowerCase())
+          );
+        });
+
   return (
     <div className="campus-layout">
       <Sidebar3 />
@@ -89,30 +130,48 @@ const SubjectManagement2 = () => {
           <div className="filters-row">
             <div className="search-box">
               <Search size={18} style={{ position: 'absolute', left: '14px', top: '12px', color: '#555' }} />
-              <input type="text" placeholder="Search by subject name or code..." />
+              <input
+                type="text"
+                placeholder="Search by subject name or code..."
+                value={searchText}
+                onChange={handleSearchInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch();
+                  }
+                }}
+              />
             </div>
             <select className="filter-select"><option>Select Class</option></select>
             <select className="filter-select"><option>Subject Type</option></select>
           </div>
 
           <DataTable headers={['Subject Name', 'Subject Code', 'Assigned Class', 'Subject Type', 'Total Marks', 'Passing Marks']}>
-            {subjects.map((row) => (
-              <tr key={row._id}>
-                <td>
-                  <strong>{row.subjectName}</strong><br />
-                  <small style={{ color: '#6b7280' }}>{row.subjectObjectives}</small>
+            {displayedSubjects.length > 0 ? (
+              displayedSubjects.map((row) => (
+                <tr key={row._id}>
+                  <td>
+                    <strong>{row.subjectName}</strong><br />
+                    <small style={{ color: '#6b7280' }}>{row.subjectObjectives}</small>
+                  </td>
+                  <td>{row.subjectCode}</td>
+                  <td>{row.assignedClass}</td>
+                  <td>
+                    <span style={{ fontWeight: '600' }}>
+                      {row.subjectCategory}
+                    </span>
+                  </td>
+                  <td>{row.totalMarks}</td>
+                  <td>{row.passingPercentage}%</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>
+                  Nothing found
                 </td>
-                <td>{row.subjectCode}</td>
-                <td>{row.assignedClass}</td>
-                <td>
-                  <span style={{ fontWeight: '600' }}>
-                    {row.subjectCategory}
-                  </span>
-                </td>
-                <td>{row.totalMarks}</td>
-                <td>{row.passingPercentage}%</td>
               </tr>
-            ))}
+            )}
           </DataTable>
         </div>
       </div>

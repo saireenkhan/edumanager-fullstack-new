@@ -25,6 +25,10 @@ const ChartAccount2 = () => {
     totalCreditBalance: 0,
   });
 
+  // Search states
+  const [searchText, setSearchText] = useState('');
+  const [searchedValue, setSearchedValue] = useState('');
+
   const API_URL = 'http://localhost:5000/api/chart-accounts-2';
 
   const fetchChartAccounts = async () => {
@@ -124,6 +128,49 @@ const ChartAccount2 = () => {
     }
   };
 
+  const handleSearch = () => {
+    setSearchedValue(searchText.trim());
+  };
+
+  const handleSearchInputChange = (e) => {
+    const value = e.target.value;
+    setSearchText(value);
+
+    // Jab search input clear ho, original fetched data wapas show hoga
+    if (value.trim() === '') {
+      setSearchedValue('');
+    }
+  };
+
+  const displayedAccountsLedgerData =
+    searchedValue === ''
+      ? accountsLedgerData
+      : accountsLedgerData.filter((row) => {
+          const code = row.code || '';
+          const accountCode = row.accountCode || '';
+          const name = row.name || '';
+          const accountName = row.accountName || '';
+          const category = row.category || '';
+          const primaryCategory = row.primaryCategory || '';
+          const description = row.description || '';
+          const accountDescription = row.accountDescription || '';
+          const balanceType = row.balanceType || '';
+          const openingBalance = row.openingBalance ? String(row.openingBalance) : '';
+
+          return (
+            code.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            accountCode.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            name.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            accountName.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            category.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            primaryCategory.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            description.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            accountDescription.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            balanceType.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            openingBalance.toLowerCase().includes(searchedValue.toLowerCase())
+          );
+        });
+
   const revenueHeads = accountsLedgerData.filter(
     (item) => item.primaryCategory === 'Revenue' || item.category === 'Revenue'
   ).length;
@@ -189,15 +236,25 @@ const ChartAccount2 = () => {
           <div className="filters-row">
             <div className="search-box">
               <Search size={18} style={{ position: 'absolute', left: '14px', top: '12px', color: '#555' }} />
-              <input type="text" placeholder="Search accounts by name or code..." />
+              <input
+                type="text"
+                placeholder="Search accounts by name or code..."
+                value={searchText}
+                onChange={handleSearchInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch();
+                  }
+                }}
+              />
             </div>
-            <button className='filter-select'>Search</button>
+            <button className='filter-select' onClick={handleSearch}>Search</button>
           </div>
 
           {/* LEDGER TABLE */}
           <DataTable headers={['Account Code', 'Account Name', 'Category', 'Sub-Category', 'Balance Type']}>
-            {accountsLedgerData.length > 0 ? (
-              accountsLedgerData.map((row) => (
+            {displayedAccountsLedgerData.length > 0 ? (
+              displayedAccountsLedgerData.map((row) => (
                 <tr key={row.id}>
                   <td>
                     <strong>{row.code || row.accountCode}</strong>

@@ -17,6 +17,10 @@ const ClassesSection2 = () => {
   const [registrations, setRegistrations] = useState([]);
   const [totals, setTotals] = useState({ total: 0, morning: 0, evening: 0 });
 
+  // Search states
+  const [searchText, setSearchText] = useState('');
+  const [searchedValue, setSearchedValue] = useState('');
+
   useEffect(() => {
     fetchRegistrations();
     fetchTotals();
@@ -64,6 +68,43 @@ const ClassesSection2 = () => {
     }
   }
 
+  const handleSearch = () => {
+    setSearchedValue(searchText.trim());
+  };
+
+  const handleSearchInputChange = (e) => {
+    const value = e.target.value;
+    setSearchText(value);
+
+    // Jab search input clear ho, original fetched data wapas show hoga
+    if (value.trim() === '') {
+      setSearchedValue('');
+    }
+  };
+
+  const displayedRegistrations =
+    searchedValue === ''
+      ? registrations
+      : registrations.filter((row) => {
+          const studentName = row.studentName || '';
+          const targetGrade = row.targetGrade || '';
+          const submittedDocs = row.submittedDocs || '';
+          const guardianContact = row.guardianContact || '';
+          const admissionShift = row.admissionShift || '';
+          const roomNumber = row.roomNumber || '';
+          const className = row.className || '';
+
+          return (
+            studentName.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            targetGrade.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            submittedDocs.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            guardianContact.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            admissionShift.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            roomNumber.toLowerCase().includes(searchedValue.toLowerCase()) ||
+            className.toLowerCase().includes(searchedValue.toLowerCase())
+          );
+        });
+
   return (
     <div className="campus-layout">
       <Sidebar3 />
@@ -89,43 +130,61 @@ const ClassesSection2 = () => {
           <div className="filters-row">
             <div className="search-box">
               <Search size={18} style={{ position: 'absolute', left: '14px', top: '12px', color: '#555' }} />
-              <input type="text" placeholder="Search by class name or room number..." />
+              <input
+                type="text"
+                placeholder="Search by class name or room number..."
+                value={searchText}
+                onChange={handleSearchInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch();
+                  }
+                }}
+              />
             </div>
-            <button className="filter-select">search</button>
+            <button className="filter-select" onClick={handleSearch}>search</button>
           </div>
 
           <DataTable headers={['Student Name', 'Target Grade', 'Documents', 'Guardian Contact', 'Shift']}>
-            {registrations.map((row) => (
-              <tr key={row._id}>
-                <td><strong>{row.studentName}</strong></td>
-                <td>{row.targetGrade}</td>
-                <td>
-                  {row.submittedDocs
-                    ? row.submittedDocs.split(',').map((doc, idx) => (
-                        <span
-                          key={idx}
-                          style={{
-                            background: '#eff6ff',
-                            color: '#1e40af',
-                            padding: '2px 8px',
-                            borderRadius: '4px',
-                            fontSize: '12px',
-                            border: '1px solid #dbeafe',
-                            marginRight: '4px',
-                          }}
-                        >
-                          {doc.trim()}
-                        </span>
-                      ))
-                    : '—'}
-                </td>
-                <td>{row.guardianContact}</td>
-                <td>
-                  <Clock size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
-                  {row.admissionShift}
+            {displayedRegistrations.length > 0 ? (
+              displayedRegistrations.map((row) => (
+                <tr key={row._id}>
+                  <td><strong>{row.studentName}</strong></td>
+                  <td>{row.targetGrade}</td>
+                  <td>
+                    {row.submittedDocs
+                      ? row.submittedDocs.split(',').map((doc, idx) => (
+                          <span
+                            key={idx}
+                            style={{
+                              background: '#eff6ff',
+                              color: '#1e40af',
+                              padding: '2px 8px',
+                              borderRadius: '4px',
+                              fontSize: '12px',
+                              border: '1px solid #dbeafe',
+                              marginRight: '4px',
+                            }}
+                          >
+                            {doc.trim()}
+                          </span>
+                        ))
+                      : '—'}
+                  </td>
+                  <td>{row.guardianContact}</td>
+                  <td>
+                    <Clock size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
+                    {row.admissionShift}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>
+                  Nothing found
                 </td>
               </tr>
-            ))}
+            )}
           </DataTable>
         </div>
       </div>

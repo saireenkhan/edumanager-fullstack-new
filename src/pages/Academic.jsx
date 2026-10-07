@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../css/Campus.css';
-import { Layers, LayoutGrid, Users, Search } from 'lucide-react';
+import { Layers, LayoutGrid, Users, Search, Download } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import Sidebar2 from '../components/Sidebar2';
 import Header from '../components/Header';
 import PageHeader from '../components/PageHeader';
@@ -99,6 +100,41 @@ const Academic = () => {
           );
         });
 
+  const handleDownloadExcel = () => {
+    if (displayedClasses.length === 0) {
+      alert('No academic data available to download.');
+      return;
+    }
+
+    const excelData = displayedClasses.map((item, index) => ({
+      'Sr. No.': index + 1,
+      'Class / Grade': item.className || '',
+      Sections: Array.isArray(item.sections) ? item.sections.join(', ') : '',
+      Department: item.department || '',
+      Capacity: item.capacity || '',
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+    worksheet['!cols'] = [
+      { wch: 10 },
+      { wch: 25 },
+      { wch: 30 },
+      { wch: 25 },
+      { wch: 15 },
+    ];
+
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      'Academic Data'
+    );
+
+    XLSX.writeFile(workbook, 'Academic_Data.xlsx');
+  };
+
   return (
     <div className="campus-layout">
       <Sidebar2 />
@@ -135,7 +171,25 @@ const Academic = () => {
                 }}
               />
             </div>
-            <button className="filter-select" onClick={handleSearch}>search</button> 
+
+            <button className="filter-select" onClick={handleSearch}>search</button>
+
+            <button
+              className="filter-select"
+              onClick={handleDownloadExcel}
+              style={{
+                backgroundColor: '#008000',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '7px',
+                cursor: 'pointer'
+              }}
+            >
+              <Download size={17} />
+              Download Excel
+            </button>
           </div>
 
           <DataTable headers={['Class / Grade', 'Sections', 'Department', 'Capacity']}>

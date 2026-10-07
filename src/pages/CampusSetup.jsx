@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../css/Campus.css';
-import { Building2, MapPin, Search } from 'lucide-react';
+import { Building2, MapPin, Search, Download } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import Sidebar2 from '../components/Sidebar2';
 import Header from '../components/Header';
 import PageHeader from '../components/PageHeader';
@@ -88,6 +89,41 @@ const CampusSetup = () => {
           );
         });
 
+  // Download currently displayed/search-filtered data as Excel
+  const handleDownloadExcel = () => {
+    if (displayedCampuses.length === 0) {
+      alert('No campus data available to download.');
+      return;
+    }
+
+    const excelData = displayedCampuses.map((item, index) => ({
+      'Sr. No.': index + 1,
+      'Campus Name': item.name || '',
+      'Location / Address': item.address || '',
+      'Contact Info': item.contact || '',
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+    // Set Excel column widths
+    worksheet['!cols'] = [
+      { wch: 10 },
+      { wch: 30 },
+      { wch: 45 },
+      { wch: 25 },
+    ];
+
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      'Campus Data'
+    );
+
+    XLSX.writeFile(workbook, 'Campus_Data.xlsx');
+  };
+
   return (
     <div className="campus-layout">
       <Sidebar2 />
@@ -164,22 +200,53 @@ const CampusSetup = () => {
             <button className="filter-select" onClick={handleSearch}>
               Search
             </button>
+
+            <button
+              className="filter-select"
+              onClick={handleDownloadExcel}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '7px',
+                color: '#fff',
+                backgroundColor: '#008000',
+                cursor: 'pointer',
+              }}
+            >
+              <Download size={17} />
+              Download Excel
+            </button>
           </div>
 
-          <DataTable headers={['Campus Name', 'Location / Address', 'Contact Info']}>
+          <DataTable
+            headers={[
+              'Campus Name',
+              'Location / Address',
+              'Contact Info',
+            ]}
+          >
             {displayedCampuses.length > 0 ? (
               displayedCampuses.map((item) => (
                 <tr key={item._id}>
                   <td>
                     <strong>{item.name}</strong>
                   </td>
+
                   <td>{item.address}</td>
+
                   <td>{item.contact}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="3" style={{ textAlign: 'center', padding: '20px' }}>
+                <td
+                  colSpan="3"
+                  style={{
+                    textAlign: 'center',
+                    padding: '20px',
+                  }}
+                >
                   Nothing found
                 </td>
               </tr>
